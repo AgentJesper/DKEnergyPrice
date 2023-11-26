@@ -4,7 +4,7 @@ from urllib.request import urlopen
 # import json
 import json
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 from slugify import slugify
 import pytz
@@ -165,7 +165,8 @@ class Elprices:
                 # We got data from the DataHub - update the dataset
                 self._all_tariffs = resp
 
-            today = datetime.utcnow()
+            # today = datetime.utcnow()
+            today = datetime.now(timezone.utc)
             # tomorrow = today + timedelta(days=1)
             # check_date = (datetime.utcnow()).strftime("%Y-%m-%d")
             check_date = today.strftime("%Y-%m-%d")
@@ -229,7 +230,7 @@ class Elprices:
         else:
             self._all_additional_tariffs = dataset
 
-        check_date = (datetime.utcnow()).strftime("%Y-%m-%d")
+        check_date = (datetime.now(timezone.utc)).strftime("%Y-%m-%d")
         tariff_data = {}
         for entry in self._all_additional_tariffs:
             if self.__entry_in_range(entry, check_date):
@@ -242,8 +243,8 @@ class Elprices:
 
     def _prepare_url(self, url: str) -> str:
         """Prepare and format the URL for the API request."""
-        start_date = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
-        end_date = (datetime.utcnow() + timedelta(days=2)).strftime("%Y-%m-%d")
+        start_date = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+        end_date = (datetime.now(timezone.utc) + timedelta(days=2)).strftime("%Y-%m-%d")
         start = f"start={str(start_date)}"
         end = f"end={str(end_date)}"
         limit = "limit=150"
